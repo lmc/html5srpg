@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>SRPG</title>
+  
+  <style type="text/css">
+    #game {
+      border: 1px #000 solid;
+    }
+    .character_sprite {
+      width: 50px;
+      height: 55px;
+    }
+  </style>
+
+  <script type="text/javascript">
+    window.onload = function(){
+      var $ = document.getElementById;
+      var c = document.getElementById('background').getContext("2d");
+      var map = [
+        [0,0,1,0,0],
+        [0,1,1,1,0],
+        [1,1,1,0,0],
+        [1,1,1,0,0],
+        [1,1,1,1,1]
+      ];
+      
+      var ground = new Image();
+      ground.src = 'images/ground.png';
+      
+      var tile = {
+        w: 54,
+        h: 26
+      };
+      
+      var map_pos = {
+        off_x: 480,
+        off_y: 320,
+        sc_x:  1.0,
+        sc_y: -1.0
+      };
+      
+      draw_map();
+      
+      function draw_map(){
+        var mapVX = 1.0;
+        var mapVY = -1.0;
+        // mapX and mapY are offsets to make sure we can position the map as we want.
+        for(i = 0; i < map.length; i++){
+          for(j = 0; j < map[i].length; j++){
+            var map_value = map[i][j];
+            if(map_value){
+              var map_coords = map2canvas(i,j);
+              console.log('Coords for ['+i+','+j+'] is ['+map_coords.x+','+map_coords.y+']');
+              c.drawImage(ground,map_coords.x,map_coords.y);
+              c.beginPath();
+              c.arc(map_coords.x,map_coords.y,5,0,Math.PI * 2,true);
+              c.closePath();
+              c.fill();
+            }
+          }
+        }
+        
+        function map2canvas(map_x,map_y){
+          var x = (map_x - map_y) *  tile.h     ;
+          var y = (map_x + map_y) * (tile.h / 2);
+          
+          x *= map_pos.sc_x;
+          y *= map_pos.sc_y;
+          
+          x += map_pos.off_x;
+          y += map_pos.off_y;
+          
+          return {x: x, y: y};
+        }
+        
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div id="game">
+    <canvas id="background" width="960" height="640"></div>
+    <div id="sprites"></div>
+  </div>
+  
+  <div id="loader">
+    <img src="images/ground.png" />
+  </div>
+</body>
+
+</html>
