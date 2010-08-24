@@ -4,12 +4,34 @@
   <title>SRPG</title>
   
   <style type="text/css">
+    body { margin: 0; padding: 0; }
     #game {
+      position: relative;
       border: 1px #000 solid;
     }
+    #background{
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 0;
+    }
+    #sprites{
+      position: relative;
+      left: 0;
+      top: 0;
+      width: 960px;
+      height: 640px;
+      z-index: 0;
+      border: 2px #8f8 dashed;
+    }
     .character_sprite {
+      position: absolute;
       width: 50px;
       height: 55px;
+      border: 1px #299 solid;
+    }
+    .archer {
+      background-image: url('images/sprite.png');
     }
   </style>
 
@@ -40,7 +62,20 @@
         sc_y: -1.0
       };
       
+      var character = {
+        w: 50,
+        h: 55,
+        x: 0,
+        y: -35
+      };
+      
       draw_map();
+      draw_characters();
+      
+      document.getElementById('sprites').addEventListener('mousemove',function(event){
+        var world_coords = canvas2map(event.clientX,event.clientY);
+        document.getElementById('output').innerHTML = parseInt(world_coords.x,10) + ',' + parseInt(world_coords.y,10);
+      },false);
       
       function draw_map(){
         var mapVX = 1.0;
@@ -54,38 +89,77 @@
               console.log('Coords for ['+i+','+j+'] is ['+map_coords.x+','+map_coords.y+']');
               c.drawImage(ground,map_coords.x,map_coords.y);
               c.beginPath();
-              c.arc(map_coords.x,map_coords.y,5,0,Math.PI * 2,true);
+              c.arc(map_coords.x,map_coords.y,1,0,Math.PI * 2,true);
               c.closePath();
               c.fill();
             }
           }
         }
-        
-        function map2canvas(map_x,map_y){
-          var x = (map_x - map_y) *  tile.h     ;
-          var y = (map_x + map_y) * (tile.h / 2);
-          
-          x *= map_pos.sc_x;
-          y *= map_pos.sc_y;
-          
-          x += map_pos.off_x;
-          y += map_pos.off_y;
-          
-          return {x: x, y: y};
-        }
-        
       }
-    }
+        
+      function draw_characters(){
+        var archer_san = document.getElementById('archer-san');
+        var archer_san_map_x = 2;
+        var archer_san_map_y = 2;
+        var archer_san_cvs_x = 0;
+        var archer_san_cvs_y = 0;
+        
+        archer_san.style.position = 'absolute';
+        
+        archer_san_cvs_x = map2canvas(archer_san_map_x,archer_san_map_y).x;
+        archer_san_cvs_y = map2canvas(archer_san_map_x,archer_san_map_y).y;
+        
+        archer_san_cvs_x += character.x;
+        archer_san_cvs_y += character.y;
+        
+        archer_san.style.left = archer_san_cvs_x + 'px';
+        archer_san.style.top  = archer_san_cvs_y + 'px';
+        
+        console.log('Coords for archer-san is ['+archer_san.style.left+','+archer_san.style.top+']');
+      }
+      
+      function map2canvas(map_x,map_y){
+        var x = (map_x - map_y) *  tile.h     ;
+        var y = (map_x + map_y) * (tile.h / 2);
+        
+        x *= map_pos.sc_x;
+        y *= map_pos.sc_y;
+        
+        x += map_pos.off_x;
+        y += map_pos.off_y;
+        
+        return {x: x, y: y};
+      }
+      
+      function canvas2map(cvs_x,cvs_y){
+        var x = cvs_x;
+        var y = cvs_y;
+        
+        x -= map_pos.off_x;
+        y -= map_pos.off_y;
+        
+        x /= map_pos.sc_x;
+        y /= map_pos.sc_y;
+        
+        x /= tile.h;
+        y /= tile.h * 2;
+        
+        return {x: x, y: y};
+      }
+    };
   </script>
 </head>
 
 <body>
   <div id="game">
-    <canvas id="background" width="960" height="640"></div>
-    <div id="sprites"></div>
+    <canvas id="background" width="960" height="640"></canvas>
+    <div id="sprites">
+      <div class="character_sprite archer" id="archer-san"></div>
+    </div>
   </div>
   
   <div id="loader">
+    <span id="output"></span>
     <img src="images/ground.png" />
   </div>
 </body>
