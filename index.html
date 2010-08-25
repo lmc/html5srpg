@@ -38,6 +38,7 @@
   <script type="text/javascript">
     window.onload = function(){
       var $ = document.getElementById;
+      var cvs = document.getElementById('background');
       var c = document.getElementById('background').getContext("2d");
       var map = [
         [0,0,1,0,0],
@@ -75,7 +76,17 @@
       document.getElementById('sprites').addEventListener('mousemove',function(event){
         var world_coords = canvas2map(event.clientX,event.clientY);
         document.getElementById('output').innerHTML = parseInt(world_coords.x,10) + ',' + parseInt(world_coords.y,10);
+        
+        var selected_coords = map2canvas(world_coords.x,world_coords.y);
+        selected_coords.y += character.y;
+        document.getElementById('selected_square').style.top = selected_coords.y + 'px';
+        document.getElementById('selected_square').style.left = selected_coords.x + 'px';
       },false);
+      
+      var Character = {
+        x: 0,
+        y: 0
+      };
       
       function draw_map(){
         var mapVX = 1.0;
@@ -132,17 +143,29 @@
       }
       
       function canvas2map(cvs_x,cvs_y){
-        var x = cvs_x;
-        var y = cvs_y;
+        //cvs_x += map_pos.off_x;
+        //cvs_y += map_pos.off_y;
         
-        x -= map_pos.off_x;
-        y -= map_pos.off_y;
+        console.log('o cvs vvv');
+        console.log(cvs_x,cvs_y);
         
-        x /= map_pos.sc_x;
-        y /= map_pos.sc_y;
+        cvs_x /= map_pos.sc_x;
+        cvs_y /= map_pos.sc_y;
         
-        x /= tile.h;
-        y /= tile.h * 2;
+        console.log(cvs_x,cvs_y);
+        
+        //var y = (2 * (cvs_y - cvs.offsetTop - map_pos.off_y) - cvs_x + cvs.offsetLeft + map_pos.off_x) / 2;
+        var y = (cvs_y + map_pos.off_y) - cvs_x + map_pos.off_x;
+        //var x = cvs_x + y - map_pos.off_x - tile.w - cvs.offsetLeft;
+        var x = cvs_x + y - map_pos.off_x - tile.w;
+        
+        console.log(x,y);
+        
+        y = Math.round(y / 54);
+        x = Math.round(x / 54);
+        
+        console.log(x,y);
+        
         
         return {x: x, y: y};
       }
@@ -155,6 +178,7 @@
     <canvas id="background" width="960" height="640"></canvas>
     <div id="sprites">
       <div class="character_sprite archer" id="archer-san"></div>
+      <div class="character_sprite" id="selected_square"></div>
     </div>
   </div>
   
