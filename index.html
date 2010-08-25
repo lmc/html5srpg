@@ -70,9 +70,9 @@
         y: -35
       };
       
-      draw_map();
-      draw_characters();
-      
+      //draw_map();
+      //draw_characters();
+      /*
       document.getElementById('sprites').addEventListener('mousemove',function(event){
         var world_coords = canvas2map(event.clientX,event.clientY);
         document.getElementById('output').innerHTML = parseInt(world_coords.x,10) + ',' + parseInt(world_coords.y,10);
@@ -82,11 +82,67 @@
         document.getElementById('selected_square').style.top = selected_coords.y + 'px';
         document.getElementById('selected_square').style.left = selected_coords.x + 'px';
       },false);
+      */
+      
       
       var Character = {
         x: 0,
-        y: 0
+        y: 0,
+        
+        draw_offset_x: 0,
+        draw_offset_y: -35,
       };
+      
+      var Renderer = {
+        target_framerate: 60,
+        canvas: null,
+        
+        draw_map: function(map){
+          for(var i = 0; i < map.length; i++){
+            for(var j = 0; j < map[i].length; j++){
+              var map_value = map[i][j];
+              if(map_value){
+                var map_coords = map2canvas(i,j);
+                this.canvas.drawImage(ground,map_coords.x,map_coords.y);
+              }
+            }
+          }
+        },
+        
+        draw_characters: function(characters){
+          for(var i = 0; i < characters.length; i++){
+            var character = characters[i];
+            var coords = map2canvas(character.x,character.y);
+            
+            var x = coords.x + character.draw_offset_x;
+            var y = coords.y + character.draw_offset_y;
+            
+            this.canvas.drawImage(CharacterImage['archer'],x,y);
+          }
+        }
+      };
+      
+      var CharacterImage = {};
+      CharacterImage['archer'] = new Image;
+      CharacterImage['archer'].src = 'images/sprite.png';
+      
+      
+      var archer = Character;
+      archer.x = 2;
+      archer.y = 2;
+      
+      Renderer.canvas = c;
+      
+      var frames = 0;
+      var frame_rate = 1000 / Renderer.target_framerate;
+      var blit = function(){
+        Renderer.draw_map(map);
+        Renderer.draw_characters([archer]);
+        frames++;
+        document.getElementById('output').innerHTML = frames;
+        setTimeout(blit,frame_rate);
+      }
+      blit();
       
       function draw_map(){
         var mapVX = 1.0;
