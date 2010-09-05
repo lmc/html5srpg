@@ -34,13 +34,20 @@
       background-image: url('images/sprite.png');
     }
   </style>
-
+  
+  <script type="text/javascript" src="js/vendor/prototype.js"></script>
+  <script type="text/javascript" src="js/character.js"></script>
+  <script type="text/javascript" src="js/renderer.js"></script>
+  <script type="text/javascript" src="js/map.js"></script>
   <script type="text/javascript">
+    var CharacterImage = {};
     window.onload = function(){
+      var to_load = ['character'];
+      
       var $ = document.getElementById;
       var cvs = document.getElementById('background');
       var c = document.getElementById('background').getContext("2d");
-      var map = [
+      var map_data = [
         [0,0,1,0,0],
         [0,1,1,1,0],
         [1,1,1,0,0],
@@ -51,180 +58,40 @@
       var ground = new Image();
       ground.src = 'images/ground.png';
       
-      var tile = {
-        w: 54,
-        h: 26
-      };
-      
-      var map_pos = {
-        off_x: 480,
-        off_y: 320,
-        sc_x:  1.0,
-        sc_y: -1.0
-      };
-      
-      var character = {
-        w: 50,
-        h: 55,
-        x: 0,
-        y: -35
-      };
-      
-      //draw_map();
-      //draw_characters();
-      /*
-      document.getElementById('sprites').addEventListener('mousemove',function(event){
-        var world_coords = canvas2map(event.clientX,event.clientY);
-        document.getElementById('output').innerHTML = parseInt(world_coords.x,10) + ',' + parseInt(world_coords.y,10);
-        
-        var selected_coords = map2canvas(world_coords.x,world_coords.y);
-        selected_coords.y += character.y;
-        document.getElementById('selected_square').style.top = selected_coords.y + 'px';
-        document.getElementById('selected_square').style.left = selected_coords.x + 'px';
-      },false);
-      */
-      
-      
-      var Character = {
-        x: 0,
-        y: 0,
-        
-        draw_offset_x: 0,
-        draw_offset_y: -35,
-      };
-      
-      var Renderer = {
-        target_framerate: 60,
-        canvas: null,
-        
-        draw_map: function(map){
-          for(var i = 0; i < map.length; i++){
-            for(var j = 0; j < map[i].length; j++){
-              var map_value = map[i][j];
-              if(map_value){
-                var map_coords = map2canvas(i,j);
-                this.canvas.drawImage(ground,map_coords.x,map_coords.y);
-              }
-            }
-          }
-        },
-        
-        draw_characters: function(characters){
-          for(var i = 0; i < characters.length; i++){
-            var character = characters[i];
-            var coords = map2canvas(character.x,character.y);
-            
-            var x = coords.x + character.draw_offset_x;
-            var y = coords.y + character.draw_offset_y;
-            
-            this.canvas.drawImage(CharacterImage['archer'],x,y);
-          }
-        }
-      };
-      
-      var CharacterImage = {};
       CharacterImage['archer'] = new Image;
       CharacterImage['archer'].src = 'images/sprite.png';
       
       
-      var archer = Character;
+      var archer = new Character;
+      console.log(archer);
       archer.x = 2;
       archer.y = 2;
       
-      Renderer.canvas = c;
+      var renderer = new Renderer();
+      renderer.canvas = c;
+      
+      var map = new Map;
+      map.data = map_data;
+      
+      renderer.map.object = map;
       
       var frames = 0;
-      var frame_rate = 1000 / Renderer.target_framerate;
+      var frame_rate = 1000 / renderer.target_framerate;
+      var characters = [archer]
       var blit = function(){
-        Renderer.draw_map(map);
-        Renderer.draw_characters([archer]);
+        renderer.draw_background();
+        renderer.draw_map(ground);
+        //renderer.draw_characters(characters);
         frames++;
         document.getElementById('output').innerHTML = frames;
-        setTimeout(blit,frame_rate);
+        
+        characters[0].x = parseInt(Math.random() * 5);
+        characters[0].y = parseInt(Math.random() * 5);
+        
+        //setTimeout(blit,frame_rate);
       }
       blit();
       
-      function draw_map(){
-        var mapVX = 1.0;
-        var mapVY = -1.0;
-        // mapX and mapY are offsets to make sure we can position the map as we want.
-        for(i = 0; i < map.length; i++){
-          for(j = 0; j < map[i].length; j++){
-            var map_value = map[i][j];
-            if(map_value){
-              var map_coords = map2canvas(i,j);
-              console.log('Coords for ['+i+','+j+'] is ['+map_coords.x+','+map_coords.y+']');
-              c.drawImage(ground,map_coords.x,map_coords.y);
-              c.beginPath();
-              c.arc(map_coords.x,map_coords.y,1,0,Math.PI * 2,true);
-              c.closePath();
-              c.fill();
-            }
-          }
-        }
-      }
-        
-      function draw_characters(){
-        var archer_san = document.getElementById('archer-san');
-        var archer_san_map_x = 2;
-        var archer_san_map_y = 2;
-        var archer_san_cvs_x = 0;
-        var archer_san_cvs_y = 0;
-        
-        archer_san.style.position = 'absolute';
-        
-        archer_san_cvs_x = map2canvas(archer_san_map_x,archer_san_map_y).x;
-        archer_san_cvs_y = map2canvas(archer_san_map_x,archer_san_map_y).y;
-        
-        archer_san_cvs_x += character.x;
-        archer_san_cvs_y += character.y;
-        
-        archer_san.style.left = archer_san_cvs_x + 'px';
-        archer_san.style.top  = archer_san_cvs_y + 'px';
-        
-        console.log('Coords for archer-san is ['+archer_san.style.left+','+archer_san.style.top+']');
-      }
-      
-      function map2canvas(map_x,map_y){
-        var x = (map_x - map_y) *  tile.h     ;
-        var y = (map_x + map_y) * (tile.h / 2);
-        
-        x *= map_pos.sc_x;
-        y *= map_pos.sc_y;
-        
-        x += map_pos.off_x;
-        y += map_pos.off_y;
-        
-        return {x: x, y: y};
-      }
-      
-      function canvas2map(cvs_x,cvs_y){
-        //cvs_x += map_pos.off_x;
-        //cvs_y += map_pos.off_y;
-        
-        console.log('o cvs vvv');
-        console.log(cvs_x,cvs_y);
-        
-        cvs_x /= map_pos.sc_x;
-        cvs_y /= map_pos.sc_y;
-        
-        console.log(cvs_x,cvs_y);
-        
-        //var y = (2 * (cvs_y - cvs.offsetTop - map_pos.off_y) - cvs_x + cvs.offsetLeft + map_pos.off_x) / 2;
-        var y = (cvs_y + map_pos.off_y) - cvs_x + map_pos.off_x;
-        //var x = cvs_x + y - map_pos.off_x - tile.w - cvs.offsetLeft;
-        var x = cvs_x + y - map_pos.off_x - tile.w;
-        
-        console.log(x,y);
-        
-        y = Math.round(y / 54);
-        x = Math.round(x / 54);
-        
-        console.log(x,y);
-        
-        
-        return {x: x, y: y};
-      }
     };
   </script>
 </head>
