@@ -3,11 +3,12 @@ var Renderer = Class.create({
   initialize: function(canvas,options){
     options = options || {};
     
-    this.target_fps = 60;
+    this.target_fps = 24;
+    this.blit_timer = null;
     this.canvas = canvas;
     
-    this.map = {
-      object: null,
+    this.map = null;
+    this.map_render_data = {
       offset_x: 480,
       offset_y: 360,
       scale_x:  1.0,
@@ -29,9 +30,9 @@ var Renderer = Class.create({
   },
   
   draw_map: function(){
-    for(var i = 0; i < this.map.object.data.length; i++){
-      for(var j = 0; j < this.map.object.data[i].length; j++){
-        var map_value = this.map.object.data[i][j];
+    for(var i = 0; i < this.map.data.length; i++){
+      for(var j = 0; j < this.map.data[i].length; j++){
+        var map_value = this.map.data[i][j];
         if(map_value){
           var map_coords = this.map2canvas(i,j);
           this.canvas.drawImage(this.sprites.ground,map_coords.x,map_coords.y);
@@ -40,9 +41,9 @@ var Renderer = Class.create({
     }
   },
   
-  draw_characters: function(characters){
-    for(var i = 0; i < characters.length; i++){
-      var character = characters[i];
+  draw_characters: function(){
+    for(var i = 0; i < this.map.characters.length; i++){
+      var character = this.map.characters[i];
       var coords = this.map2canvas(character.x,character.y);
       
       var x = coords.x + character.sprite.offset_x;
@@ -53,48 +54,30 @@ var Renderer = Class.create({
   },
   
   blit: function(){
-    
+    this.draw_background();
+    this.draw_map();
+    this.draw_characters();
+  },
+  
+  initialize_blit: function(){
+    this.blit_timer = setInterval(this.blit.bind(this),this.target_framerate_for_timer());
+  },
+  
+  target_framerate_for_timer: function(){
+    return 1000 / this.target_fps;
   },
   
   
   
   map2canvas: function(map_x,map_y){
-    var x = (map_x - map_y) *  this.map.object.tile.height     ;
-    var y = (map_x + map_y) * (this.map.object.tile.height / 2);
+    var x = (map_x - map_y) *  this.map.tile.height     ;
+    var y = (map_x + map_y) * (this.map.tile.height / 2);
     
-    x *= this.map.scale_x;
-    y *= this.map.scale_y;
+    x *= this.map_render_data.scale_x;
+    y *= this.map_render_data.scale_y;
     
-    x += this.map.offset_x;
-    y += this.map.offset_y;
-    
-    return {x: x, y: y};
-  },
-  
-  canvas2map: function(cvs_x,cvs_y){
-    //cvs_x += map_pos.off_x;
-    //cvs_y += map_pos.off_y;
-    
-    console.log('o cvs vvv');
-    console.log(cvs_x,cvs_y);
-    
-    cvs_x /= map_pos.sc_x;
-    cvs_y /= map_pos.sc_y;
-    
-    console.log(cvs_x,cvs_y);
-    
-    //var y = (2 * (cvs_y - cvs.offsetTop - map_pos.off_y) - cvs_x + cvs.offsetLeft + map_pos.off_x) / 2;
-    var y = (cvs_y + map_pos.off_y) - cvs_x + map_pos.off_x;
-    //var x = cvs_x + y - map_pos.off_x - tile.w - cvs.offsetLeft;
-    var x = cvs_x + y - map_pos.off_x - tile.w;
-    
-    console.log(x,y);
-    
-    y = Math.round(y / 54);
-    x = Math.round(x / 54);
-    
-    console.log(x,y);
-    
+    x += this.map_render_data.offset_x;
+    y += this.map_render_data.offset_y;
     
     return {x: x, y: y};
   }
