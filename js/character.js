@@ -41,6 +41,6 @@ var Character = Class.create({
   },
   
   can_move_to_position: function(coords){
-    return this.map.data[coords.x][coords.y];
+    return this.map.data[coords.x] && this.map.data[coords.x][coords.y];
   }
 });

@@ -7,12 +7,14 @@ var Renderer = Class.create({
     this.blit_timer = null;
     this.canvas = canvas;
     
+    this.angle = 0;
+    
     this.map = null;
     this.map_render_data = {
       offset_x: 480,
       offset_y: 360,
       scale_x:  1.0,
-      scale_y: -1.0
+      scale_y:  1.0
     };
     
     this.sprites_path = 'images/';
@@ -26,7 +28,7 @@ var Renderer = Class.create({
   },
     
   draw_background: function(){
-    this.canvas.clearRect(0,0,960,480);
+    this.canvas.clearRect(0,0,960,640);
   },
   
   draw_map: function(){
@@ -67,6 +69,21 @@ var Renderer = Class.create({
     return 1000 / this.target_fps;
   },
   
+  rotate_camera: function(angle){
+    if(angle >= 0){
+      this.angle += 90;
+    }else{
+      this.angle -= 90;
+    }
+    
+    if(this.angle >= 360 || this.angle < 0){
+      this.angle = 0;
+    }
+    
+    this.update_map_render_data_from_angle();
+    this.blit();
+  },
+  
   
   
   map2canvas: function(map_x,map_y){
@@ -80,6 +97,29 @@ var Renderer = Class.create({
     y += this.map_render_data.offset_y;
     
     return {x: x, y: y};
+  },
+  
+  update_map_render_data_from_angle: function(){
+    switch(this.angle){
+      case 90:
+        this.map_render_data.scale_x = -1.0;
+        this.map_render_data.scale_y = 1.0;
+        break;
+      case 180:
+        this.map_render_data.scale_x = -1.0;
+        this.map_render_data.scale_y = -1.0;
+        break;
+      case 270:
+        this.map_render_data.scale_x = 1.0;
+        this.map_render_data.scale_y = -1.0;
+        break;
+      case 0:
+      default:
+        this.map_render_data.scale_x = 1.0;
+        this.map_render_data.scale_y = 1.0;
+        break;
+    }
+    console.log("got %s, setting x,y to %s,%s",this.angle,this.map_render_data.scale_x,this.map_render_data.scale_y);
   }
   
 });
