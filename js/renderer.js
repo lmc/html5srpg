@@ -31,6 +31,8 @@ var Renderer = Class.create({
     this.canvas.clearRect(0,0,960,640);
   },
   
+  //TODO: need to ensure we're drawing front to back in terms of viewport
+  //TODO: occulusion, viewport cropping
   draw_map: function(){
     for(var i = 0; i < this.map.data.length; i++){
       for(var j = 0; j < this.map.data[i].length; j++){
@@ -76,8 +78,10 @@ var Renderer = Class.create({
       this.angle -= 90;
     }
     
-    if(this.angle >= 360 || this.angle < 0){
+    if(this.angle >= 360){
       this.angle = 0;
+    }else if(this.angle < 0){
+      this.angle = 270;
     }
     
     this.update_map_render_data_from_angle();
@@ -119,7 +123,6 @@ var Renderer = Class.create({
         this.map_render_data.scale_y = 1.0;
         break;
     }
-    console.log("got %s, setting x,y to %s,%s",this.angle,this.map_render_data.scale_x,this.map_render_data.scale_y);
   }
   
 });
