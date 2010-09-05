@@ -40,10 +40,7 @@
   <script type="text/javascript" src="js/renderer.js"></script>
   <script type="text/javascript" src="js/map.js"></script>
   <script type="text/javascript">
-    var CharacterImage = {};
     window.onload = function(){
-      var to_load = ['character'];
-      
       var $ = document.getElementById;
       var cvs = document.getElementById('background');
       var c = document.getElementById('background').getContext("2d");
@@ -54,20 +51,15 @@
         [1,1,1,0,0],
         [1,1,1,1,1]
       ];
-      
-      var ground = new Image();
-      ground.src = 'images/ground.png';
-      
-      CharacterImage['archer'] = new Image;
-      CharacterImage['archer'].src = 'images/sprite.png';
-      
-      
+
       var archer = new Character;
-      console.log(archer);
       archer.x = 2;
       archer.y = 2;
+      archer.sprite.name = 'sprite';
       
       var renderer = new Renderer();
+      renderer.load_sprite(archer.sprite.name);
+      renderer.load_sprite('ground');
       renderer.canvas = c;
       
       var map = new Map;
@@ -75,19 +67,20 @@
       
       renderer.map.object = map;
       
-      var frames = 0;
-      var frame_rate = 1000 / renderer.target_framerate;
       var characters = [archer]
+      var frames = 0;
+      var frame_rate = 1000 / renderer.target_fps;
       var blit = function(){
         renderer.draw_background();
-        renderer.draw_map(ground);
-        //renderer.draw_characters(characters);
+        renderer.draw_map();
+        renderer.draw_characters(characters);
         frames++;
         document.getElementById('output').innerHTML = frames;
         
         characters[0].x = parseInt(Math.random() * 5);
         characters[0].y = parseInt(Math.random() * 5);
         
+        //uncomment for unstoppable sprite flickering
         //setTimeout(blit,frame_rate);
       }
       blit();
@@ -99,15 +92,10 @@
 <body>
   <div id="game">
     <canvas id="background" width="960" height="640"></canvas>
-    <div id="sprites">
-      <div class="character_sprite archer" id="archer-san"></div>
-      <div class="character_sprite" id="selected_square"></div>
-    </div>
   </div>
   
   <div id="loader">
     <span id="output"></span>
-    <img src="images/ground.png" />
   </div>
 </body>
 

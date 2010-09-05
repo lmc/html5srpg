@@ -1,30 +1,40 @@
 var Renderer = Class.create({
-  target_framerate: 60,
-  canvas: null,
-  fps_element: null,
   
-  map: {
-    object: null,
-    offset_x: 480,
-    offset_y: 360,
-    scale_x:  1.0,
-    scale_y: -1.0
+  initialize: function(canvas,options){
+    options = options || {};
+    
+    this.target_fps = 60;
+    this.canvas = canvas;
+    
+    this.map = {
+      object: null,
+      offset_x: 480,
+      offset_y: 360,
+      scale_x:  1.0,
+      scale_y: -1.0
+    };
+    
+    this.sprites_path = 'images/';
+    this.sprites = {};
   },
   
+  load_sprite: function(name,callback){
+    this.sprites[name] = new Image;
+    this.sprites[name].onload = callback || function(){};
+    this.sprites[name].src = this.sprites_path + name + '.png';
+  },
+    
   draw_background: function(){
     this.canvas.clearRect(0,0,960,480);
   },
   
-  draw_map: function(ground){
-    console.log(this.map);
+  draw_map: function(){
     for(var i = 0; i < this.map.object.data.length; i++){
       for(var j = 0; j < this.map.object.data[i].length; j++){
         var map_value = this.map.object.data[i][j];
         if(map_value){
-          console.log('map data at %s,%s',i,j);
           var map_coords = this.map2canvas(i,j);
-          console.log('pixels are %s,%s',map_coords.x,map_coords.y);
-          this.canvas.drawImage(ground,map_coords.x,map_coords.y);
+          this.canvas.drawImage(this.sprites.ground,map_coords.x,map_coords.y);
         }
       }
     }
@@ -38,7 +48,7 @@ var Renderer = Class.create({
       var x = coords.x + character.sprite.offset_x;
       var y = coords.y + character.sprite.offset_y;
       
-      this.canvas.drawImage(CharacterImage['archer'],x,y);
+      this.canvas.drawImage(this.sprites[character.sprite.name],x,y);
     }
   },
   
