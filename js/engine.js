@@ -19,7 +19,7 @@ var Engine = Class.create({
     
     this.map = new Map(map_data);
     
-    var character = new Character('sprite');
+    var character = new Character(this.map,'sprite');
     character.x = 2;
     character.y = 2;
     
