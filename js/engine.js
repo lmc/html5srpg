@@ -5,6 +5,7 @@ var Engine = Class.create({
     
     this.initialize_map();
     this.initialize_renderer(canvas);
+    this.initialize_controls();
   },
   
   initialize_map: function(){
@@ -33,5 +34,21 @@ var Engine = Class.create({
     this.renderer.map.characters.each(function(character){
       this.renderer.load_sprite(character.sprite.name);
     },this);
+  },
+  
+  initialize_controls: function(){
+    Event.observe(window,'keydown',function(event){
+      var key = String.fromCharCode(event.keyCode);
+      switch(key){
+        case 'W': this.get_selected_character().controller_input({x:  0, y:  1}); break;
+        case 'S': this.get_selected_character().controller_input({x:  0, y: -1}); break;
+        case 'A': this.get_selected_character().controller_input({x:  1, y:  0}); break;
+        case 'D': this.get_selected_character().controller_input({x: -1, y:  0}); break;
+      }
+    }.bind(this));
+  },
+  
+  get_selected_character: function(){
+    return this.map.characters[0];
   }
 });

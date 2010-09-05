@@ -10,5 +10,18 @@ var Character = Class.create({
       offset_x: 0,
       offset_y: -35,
     };
+  },
+  
+  /* {
+    x: 1,0,-1,
+    y: 1,0,-1
+  } */
+  controller_input: function(input){
+    if(input.x){
+      this.x += input.x;
+    }
+    if(input.y){
+      this.y += input.y;
+    }
   }
 });
