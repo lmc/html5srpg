@@ -3,7 +3,7 @@ var Renderer = Class.create({
   initialize: function(canvas,options){
     options = options || {};
     
-    this.target_fps = 24;
+    this.target_fps = 12;
     this.blit_timer = null;
     this.canvas = canvas;
     
@@ -21,6 +21,7 @@ var Renderer = Class.create({
     this.sprites = {};
   },
   
+  //TODO: See if keeping sprites as native canvas elements is faster?
   load_sprite: function(name,callback){
     this.sprites[name] = new Image;
     this.sprites[name].onload = callback || function(){};
@@ -50,13 +51,21 @@ var Renderer = Class.create({
       var character = this.map.characters[i];
       var coords = this.map2canvas(character.x,character.y);
       
-      var x = coords.x + character.sprite.offset_x;
-      var y = coords.y + character.sprite.offset_y;
+      var x = coords.x;
+      var y = coords.y;
+      
+      if(character.selected){
+        this.canvas.drawImage(this.sprites.selected_shadow,x,y);
+      }
+      
+      x += character.sprite.offset_x;
+      y += character.sprite.offset_y;
       
       this.canvas.drawImage(this.sprites[character.sprite.name],x,y);
     }
   },
   
+  //TODO: Make it so it only blits when game state has changed?
   blit: function(){
     this.draw_background();
     this.draw_map();

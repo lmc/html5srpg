@@ -4,6 +4,8 @@ var Character = Class.create({
     
     this.x = 0;
     this.y = 0;
+    
+    this.selected = false;
 
     this.sprite = {
       name:   sprite_name,
