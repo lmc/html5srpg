@@ -3,7 +3,7 @@ var Renderer = Class.create({
   initialize: function(canvas,effects_canvas,options){
     options = options || {};
     
-    this.target_fps = 12;
+    this.target_fps = 60;
     this.blit_timer = null;
     
     this.canvases = {
@@ -100,8 +100,8 @@ var Renderer = Class.create({
   },
   
   initialize_blit: function(){
-    //this.blit_timer = setInterval(this.blit.bind(this),this.target_framerate_for_timer());
-    this.blit();
+    this.blit_timer = setInterval(this.blit.bind(this),this.target_framerate_for_timer());
+    //this.blit();
   },
   
   target_framerate_for_timer: function(){
