@@ -1,11 +1,12 @@
 var Engine = Class.create({
-  initialize: function(canvas){
+  initialize: function(canvas,effects_canvas){
     this.map = null;
     this.renderer = null;
     
+    this.prng_seed = 0;
     
     this.initialize_map();
-    this.initialize_renderer(canvas);
+    this.initialize_renderer(canvas,effects_canvas);
     this.initialize_controls();
     
     //ensure we have someone selected at init
@@ -35,8 +36,8 @@ var Engine = Class.create({
     this.map.characters.push(character);
   },
   
-  initialize_renderer: function(canvas){
-    this.renderer = new Renderer(canvas.getContext('2d'));
+  initialize_renderer: function(canvas,effects_canvas){
+    this.renderer = new Renderer(canvas.getContext('2d'),effects_canvas.getContext('2d'));
     this.renderer.map = this.map;
     
     this.renderer.load_sprite('ground');

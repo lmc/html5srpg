@@ -8,7 +8,7 @@
     #game {
       position: relative;
     }
-    #background{
+    #background,#effects{
       position: absolute;
       left: 0;
       top: 0;
@@ -21,10 +21,11 @@
   <script type="text/javascript" src="js/engine.js"></script>
   <script type="text/javascript" src="js/character.js"></script>
   <script type="text/javascript" src="js/renderer.js"></script>
+  <script type="text/javascript" src="js/effect.js"></script>
   <script type="text/javascript" src="js/map.js"></script>
   <script type="text/javascript">
     window.onload = function(){
-      var engine = new Engine($('background'));
+      var engine = new Engine($('background'),$('effects'));
       engine.renderer.initialize_blit();
     };
   </script>
@@ -33,6 +34,7 @@
 <body>
   <div id="game">
     <canvas id="background" width="960" height="640"></canvas>
+    <canvas id="effects" width="960" height="640"></canvas>
   </div>
   
   <div id="loader">

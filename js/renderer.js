@@ -1,13 +1,21 @@
 var Renderer = Class.create({
   
-  initialize: function(canvas,options){
+  initialize: function(canvas,effects_canvas,options){
     options = options || {};
     
     this.target_fps = 12;
     this.blit_timer = null;
-    this.canvas = canvas;
+    
+    this.canvases = {
+      main:    canvas,
+      effects: effects_canvas
+    }
+    this.canvas = this.canvases.main;
     
     this.angle = 0;
+    
+    this.effects = [];
+    this.selected_effect = null;
     
     this.map = null;
     this.map_render_data = {
@@ -26,6 +34,13 @@ var Renderer = Class.create({
     this.sprites[name] = new Image;
     this.sprites[name].onload = callback || function(){};
     this.sprites[name].src = this.sprites_path + name + '.png';
+    return this.sprites[name];
+  },
+  
+  create_effect: function(){
+    var effect = new Effect(this);
+    this.effects.push(effect);
+    return effect;
   },
     
   draw_background: function(){
@@ -56,6 +71,7 @@ var Renderer = Class.create({
       
       if(character.selected){
         this.canvas.drawImage(this.sprites.selected_shadow,x,y);
+        this.draw_selected_effect(character);
       }
       
       x += character.sprite.offset_x;
@@ -63,6 +79,17 @@ var Renderer = Class.create({
       
       this.canvas.drawImage(this.sprites[character.sprite.name],x,y);
     }
+  },
+  
+  draw_selected_effect: function(character){
+    if(!this.selected_effect){
+      this.selected_effect = this.create_effect();
+      this.selected_effect.sprite = this.load_sprite('particle');
+    }
+    this.selected_effect.set_origin(character);
+    
+    this.canvases.effects.clearRect(0,0,960,640);
+    this.selected_effect.blit(this.canvases.effects);
   },
   
   //TODO: Make it so it only blits when game state has changed?
@@ -73,7 +100,8 @@ var Renderer = Class.create({
   },
   
   initialize_blit: function(){
-    this.blit_timer = setInterval(this.blit.bind(this),this.target_framerate_for_timer());
+    //this.blit_timer = setInterval(this.blit.bind(this),this.target_framerate_for_timer());
+    this.blit();
   },
   
   target_framerate_for_timer: function(){
