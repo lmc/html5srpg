@@ -57,7 +57,10 @@ var Engine = Class.create({
       character.selected = false;
     }
     this.selected_character_index = new_selected_character_index;
-    this.get_selected_character().selected = true;
+    character = this.get_selected_character()
+    character.selected = true;
+    
+    this.renderer.focus_camera(character.x,character.y);
   },
   
   cycle_selected_character: function(){

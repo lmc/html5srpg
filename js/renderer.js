@@ -12,17 +12,23 @@ var Renderer = Class.create({
     }
     this.canvas = this.canvases.main;
     
-    this.angle = 0;
+    this.angle = 270;
     
     this.effects = [];
     this.selected_effect = null;
     
     this.map = null;
+    
+    this.canvas_size = {
+      width:  960,
+      height: 640
+    };
+    
     this.map_render_data = {
       offset_x: 480,
       offset_y: 360,
       scale_x:  1.0,
-      scale_y:  1.0
+      scale_y:  -1.0
     };
     
     this.sprites_path = 'images/';
@@ -123,6 +129,18 @@ var Renderer = Class.create({
     
     this.update_map_render_data_from_angle();
     this.blit();
+  },
+  
+  focus_camera: function(x,y){
+    var new_offset = this.map2canvas(x,y);
+    
+    this.map_render_data.offset_x -= new_offset.x;
+    this.map_render_data.offset_y -= new_offset.y;
+    
+    this.map_render_data.offset_x += (this.canvas_size.width / 2);
+    this.map_render_data.offset_y += (this.canvas_size.height / 2);
+    
+    console.log(new_offset.x,new_offset.y);
   },
   
   
