@@ -5,7 +5,7 @@ var Effect = Class.create({
     this.renderer = renderer;
     
     this.sprite = null;
-    this.cycle_length = 1000; //ms
+    this.cycle_length = -0.25; //TODO: Find a way to set the cycle_length in ms
     
     this.origin_x = null;
     this.origin_y = null;
@@ -20,9 +20,9 @@ var Effect = Class.create({
   
   blit: function(canvas){
     var coords = this.renderer.map2canvas(this.origin_x,this.origin_y);
-    var angle = ((new Date) - this.created_at) % 360;
+    var angle = (((new Date) - this.created_at) * this.cycle_length) % 360;
     
-    coords.y -= 50;
+    coords.y -= 50; //HACK
     
     coords.x = coords.x + this.radius * Math.cos(angle * Math.PI / 180);
     coords.y = coords.y - this.radius * Math.sin(angle * Math.PI / 180);
