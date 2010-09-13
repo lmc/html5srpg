@@ -3,7 +3,7 @@ var Renderer = Class.create({
   initialize: function(canvas,effects_canvas,options){
     options = options || {};
     
-    this.target_fps = 60;
+    this.target_fps = 15;
     this.blit_timer = null;
     
     this.canvases = {
@@ -53,7 +53,7 @@ var Renderer = Class.create({
     for(var i = 0; i < this.map.data.length; i++){
       for(var j = 0; j < this.map.data[i].length; j++){
         var map_value = this.map.data[i][j];
-        if(map_value){
+        if(map_value.drawable()){
           var map_coords = this.map2canvas(i,j);
           this.canvas.drawImage(this.sprites.ground,map_coords.x,map_coords.y);
         }

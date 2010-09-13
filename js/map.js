@@ -1,7 +1,6 @@
 var Map = Class.create({
-  initialize: function(map_data){
-    this.data = map_data;
-    
+  initialize: function(){
+    this.data = [];
     this.characters = [];
     
     this.tile = {

@@ -1,11 +1,11 @@
 var Engine = Class.create({
-  initialize: function(canvas,effects_canvas){
+  initialize: function(canvas,effects_canvas,map_loader_instance){
     this.map = null;
     this.renderer = null;
     
     this.prng_seed = 0;
     
-    this.initialize_map();
+    this.initialize_map(map_loader_instance);
     this.initialize_renderer(canvas,effects_canvas);
     this.initialize_controls();
     
@@ -14,26 +14,9 @@ var Engine = Class.create({
     this.cycle_selected_character();
   },
   
-  initialize_map: function(){
-    var map_data = [
-      [0,0,1,0,0,0,0,0,0,0],
-      [0,1,1,1,0,0,0,0,1,0],
-      [1,1,1,0,0,0,0,0,1,1],
-      [1,1,1,0,0,0,0,0,1,0],
-      [1,1,1,1,1,0,0,0,0,0]
-    ];
-    
-    this.map = new Map(map_data);
-    
-    var character = new Character(this.map,'sprite');
-    character.x = 2;
-    character.y = 2;
-    this.map.characters.push(character);
-    
-    var character = new Character(this.map,'sprite');
-    character.x = 3;
-    character.y = 8;
-    this.map.characters.push(character);
+  initialize_map: function(map_loader_instance){
+    this.map = new Map();
+    map_loader_instance.load(this.map);
   },
   
   initialize_renderer: function(canvas,effects_canvas){
