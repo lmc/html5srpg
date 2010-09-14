@@ -133,7 +133,6 @@ var Renderer = Class.create({
     }
     
     this.update_map_render_data_from_angle();
-    this.blit();
   },
   
   focus_camera: function(x,y,scroll_time){
