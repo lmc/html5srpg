@@ -17,6 +17,8 @@ var Renderer = Class.create({
     this.effects = [];
     this.selected_effect = null;
     
+    this.camera_focus_target = null; //OR {x: world_pos, y: world_pos}
+    
     this.map = null;
     
     this.canvas_size = {
@@ -47,6 +49,13 @@ var Renderer = Class.create({
     var effect = new Effect(this);
     this.effects.push(effect);
     return effect;
+  },
+  
+  before_blit: function(){
+    if(this.camera_focus_target){
+      this.focus_camera(this.camera_focus_target.x,this.camera_focus_target.y);
+      this.camera_focus_target = null;
+    }
   },
     
   draw_background: function(){
@@ -100,14 +109,10 @@ var Renderer = Class.create({
   
   //TODO: Make it so it only blits when game state has changed?
   blit: function(){
+    this.before_blit();
     this.draw_background();
     this.draw_map();
     this.draw_characters();
-  },
-  
-  initialize_blit: function(){
-    this.blit_timer = setInterval(this.blit.bind(this),this.target_framerate_for_timer());
-    //this.blit();
   },
   
   target_framerate_for_timer: function(){
@@ -131,16 +136,14 @@ var Renderer = Class.create({
     this.blit();
   },
   
-  focus_camera: function(x,y){
-    var new_offset = this.map2canvas(x,y);
+  focus_camera: function(x,y,scroll_time){
+    var to_offset = this.map2canvas(x,y);
     
-    this.map_render_data.offset_x -= new_offset.x;
-    this.map_render_data.offset_y -= new_offset.y;
+    this.map_render_data.offset_x -= to_offset.x;
+    this.map_render_data.offset_y -= to_offset.y;
     
     this.map_render_data.offset_x += (this.canvas_size.width / 2);
     this.map_render_data.offset_y += (this.canvas_size.height / 2);
-    
-    console.log(new_offset.x,new_offset.y);
   },
   
   

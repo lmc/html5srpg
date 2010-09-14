@@ -5,6 +5,11 @@ var Engine = Class.create({
     
     this.prng_seed = 0;
     
+    this.think_framerate = 60;
+    this.renderer_framerate = 15;
+    this.think_timer = null;
+    this.renderer_timer = null;
+    
     this.initialize_map(map_loader_instance);
     this.initialize_renderer(canvas,effects_canvas);
     this.initialize_controls();
@@ -47,6 +52,21 @@ var Engine = Class.create({
     }.bind(this));
   },
   
+  initialize_think: function(){
+    this.think_timer    = setInterval(this.think.bind(this),1000 / this.think_framerate);
+    this.renderer_timer = setInterval(this.renderer_think.bind(this),1000 / this.renderer_framerate);
+  },
+  
+  think: function(){
+    
+  },
+  
+  renderer_think: function(){
+    var selected_character = this.get_selected_character();
+    this.renderer.focus_camera(selected_character.x,selected_character.y);
+    this.renderer.blit();
+  },
+  
   get_selected_character: function(){
     return this.map.characters[this.selected_character_index];
   },
@@ -59,8 +79,6 @@ var Engine = Class.create({
     this.selected_character_index = new_selected_character_index;
     character = this.get_selected_character()
     character.selected = true;
-    
-    this.renderer.focus_camera(character.x,character.y);
   },
   
   cycle_selected_character: function(){
