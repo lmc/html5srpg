@@ -16,6 +16,7 @@ var Renderer = Class.create({
     
     this.effects = [];
     this.selected_effect = null;
+    this.selected_coordinates = [null,null];
     
     this.camera_focus_target = null; //OR {x: world_pos, y: world_pos}
     
@@ -62,15 +63,18 @@ var Renderer = Class.create({
     this.canvas.clearRect(0,0,960,640);
   },
   
-  //TODO: need to ensure we're drawing front to back in terms of viewport
+  //TODO: need to ensure we're drawing front to back in terms of viewport (check rotation, adjust how to iterate this.map.data accordingly)
   //TODO: occulusion, viewport cropping
   draw_map: function(){
     for(var i = 0; i < this.map.data.length; i++){
       for(var j = 0; j < this.map.data[i].length; j++){
         var map_value = this.map.data[i][j];
+        var map_coords = this.map2canvas(i,j);
         if(map_value.drawable()){
-          var map_coords = this.map2canvas(i,j);
           this.canvas.drawImage(this.sprites.ground,map_coords.x,map_coords.y);
+        }
+        if(this.selected_coordinates[0] == i && this.selected_coordinates[1] == j){
+          this.canvas.drawImage(this.sprites.selected_shadow,map_coords.x,map_coords.y);
         }
       }
     }

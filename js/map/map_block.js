@@ -6,7 +6,7 @@ var MapBlock = Class.create({
     
     this.sprite = 'ground';
     
-    console.log('%s,%s is walkable? %s',x,y,this.walkable() ? 'true' : 'false');
+    //console.log('%s,%s is walkable? %s',x,y,this.walkable() ? 'true' : 'false');
   },
   
   walkable: function(){

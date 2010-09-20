@@ -17,6 +17,8 @@ var Engine = Class.create({
     //ensure we have someone selected at init
     this.selected_character_index = -1;
     this.cycle_selected_character();
+    
+    this.selected_coordinates = [null,null];
   },
   
   initialize_map: function(map_loader_instance){
@@ -50,6 +52,34 @@ var Engine = Class.create({
         case 'P': this.renderer.rotate_camera(-1); break;
       }
     }.bind(this));
+    
+    Event.observe(window,'mousemove',function(event){
+      var x = event.clientX;
+      var y = event.clientY;
+      
+      x -= this.renderer.map_render_data.offset_x;
+      y -= this.renderer.map_render_data.offset_y;
+      
+      x *= this.renderer.map_render_data.scale_x;
+      y *= this.renderer.map_render_data.scale_y;
+      
+      //midpoints
+      //x += (this.renderer.map.tile.width  / 2);
+      //y += (this.renderer.map.tile.height / 2);
+      
+      x /= this.renderer.map.tile.width;
+      y /= this.renderer.map.tile.height;
+      
+      //factor in camera rotation
+      
+      x = parseInt(x);
+      y = parseInt(y);
+      
+      this.selected_coordinates = [x,y];
+      this.renderer.selected_coordinates = [x,y];
+      
+      $('output').innerHTML = "Translated: "+x+","+y;
+    }.bind(this));
   },
   
   initialize_think: function(){
@@ -64,6 +94,7 @@ var Engine = Class.create({
   renderer_think: function(){
     var selected_character = this.get_selected_character();
     this.renderer.focus_camera(selected_character.x,selected_character.y);
+    
     this.renderer.blit();
   },
   

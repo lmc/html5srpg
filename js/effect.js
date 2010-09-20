@@ -25,7 +25,7 @@ var Effect = Class.create({
     coords.y -= 50; //HACK
     
     coords.x = coords.x + this.radius * Math.cos(angle * Math.PI / 180);
-    coords.y = coords.y - this.radius * Math.sin(angle * Math.PI / 180);
+    coords.y = coords.y + this.radius * Math.sin(angle * Math.PI / 180);
     
     canvas.drawImage(this.sprite,coords.x,coords.y);
   }
