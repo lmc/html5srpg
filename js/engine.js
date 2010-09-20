@@ -120,3 +120,5 @@ var Engine = Class.create({
     this.set_selected_character(temp_index);
   }
 });
+
+var BlankFunction = function(){};

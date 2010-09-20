@@ -32,6 +32,11 @@ var TestMapLoader = Class.create(MapLoader,{
       }
     }
     
+    map.data[3][3].drawable_callback = function(canvas,x,y,renderer){
+      canvas.fillStyle = 'rgba(255,64,64,0.5)';
+      canvas.fillRect(x,y,15,15);
+    };
+    
     var character = new Character(map,'sprite');
     character.x = 2;
     character.y = 2;

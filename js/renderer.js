@@ -63,21 +63,48 @@ var Renderer = Class.create({
     this.canvas.clearRect(0,0,960,640);
   },
   
-  //TODO: need to ensure we're drawing front to back in terms of viewport (check rotation, adjust how to iterate this.map.data accordingly)
   //TODO: occulusion, viewport cropping
   draw_map: function(){
-    for(var i = 0; i < this.map.data.length; i++){
-      for(var j = 0; j < this.map.data[i].length; j++){
-        var map_value = this.map.data[i][j];
-        var map_coords = this.map2canvas(i,j);
-        if(map_value.drawable()){
-          this.canvas.drawImage(this.sprites.ground,map_coords.x,map_coords.y);
+    if(this.angle == 90){
+      for(var i = 0; i < this.map.data.length; i++){
+        for(var j = 0; j < this.map.data[i].length; j++){
+          this.draw_map_tile(i,j);
         }
-        if(this.selected_coordinates[0] == i && this.selected_coordinates[1] == j){
-          this.canvas.drawImage(this.sprites.selected_shadow,map_coords.x,map_coords.y);
+      }
+    }else if(this.angle == 180){
+      for(var i = this.map.data.length - 1; i > 0; i--){
+        for(var j = 0; j < this.map.data[i].length; j++){
+          this.draw_map_tile(i,j);
+        }
+      }
+    }else if(this.angle == 270){
+      for(var i = 0; i < this.map.data.length; i++){
+        for(var j = this.map.data[i].length - 1; j > 0; j--){
+          this.draw_map_tile(i,j);
+        }
+      }
+    }else{
+      for(var i = this.map.data.length - 1; i > 0; i--){
+        for(var j = this.map.data[i].length - 1; j > 0; j--){
+          this.draw_map_tile(i,j);
         }
       }
     }
+  },
+  
+  draw_map_tile: function(map_x,map_y){
+    var map_value = this.map.data[map_x][map_y];
+    var map_coords = this.map2canvas(map_x,map_y);
+    if(map_value.drawable()){
+      this.canvas.drawImage(this.sprites.ground,map_coords.x,map_coords.y);
+    }
+    //TODO: BENCHMARK: Faster to run a blank function, or check for valid function and run if possible?
+    //if(map_value.drawable_callback){
+      map_value.drawable_callback(this.canvas,map_coords.x,map_coords.y,this);
+    //}
+    //if(this.selected_coordinates[0] == map_x && this.selected_coordinates[1] == map_y){
+    //  this.canvas.drawImage(this.sprites.selected_shadow,map_coords.x,map_coords.y);
+    //}
   },
   
   draw_characters: function(){
